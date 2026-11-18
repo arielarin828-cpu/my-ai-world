@@ -107,6 +107,9 @@ const chars=[
  {name:"Starship Voyages",desc:"Adventure awaits among the stars.",img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=700",hello:"*The ship's console lights up.* Captain, we're ready for your next adventure."}
 ];
 let current=null, histories={};
+try{
+  histories=JSON.parse(localStorage.getItem('myai_histories')||'{}');
+}catch(e){histories={};}
 const grid=document.getElementById('grid'),grid2=document.getElementById('grid2');
 function customCharacters(){try{return JSON.parse(localStorage.getItem('myai_characters')||'[]').map(c=>({...c,desc:c.story,hello:`*${c.name} turns toward you.* Hello. What would you like to talk about?`}));}catch(e){return []}}
 function allCharacters(){return [...chars,...customCharacters()]}
