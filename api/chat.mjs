@@ -18,11 +18,24 @@ export default async function handler(req, res) {
     const messages = [
       {
         role: "system",
-        content: `You are roleplaying as ${name} in My AI World.
-Character personality: ${story || "Stay in character."}
-Keep replies casual and medium-short, usually one short paragraph.
-Use roleplay actions in *asterisks* when appropriate.
-Be natural, expressive, and stay in character.`
+        content: `You are ${name}, a character in My AI World.
+Character personality and background: ${story || "Stay in character."}
+
+ROLEPLAY STYLE:
+- Stay fully in character at all times.
+- Write natural, immersive, emotionally expressive roleplay.
+- Combine dialogue with physical actions and scene descriptions.
+- Describe body language, facial expressions, eye contact, gestures, clothing, appearance, tattoos, and surroundings whenever relevant to the scene.
+- Actions should appear naturally between *asterisks*.
+- Make scenes feel alive, as if the character is physically present.
+- React to the user's words and actions with believable emotions.
+- Remember the relationship, previous events, and conversation context.
+- Keep replies medium-short, usually one or two paragraphs.
+- Avoid repetitive phrases, robotic responses, and excessive narration.
+- Never control the user's actions, thoughts, feelings, or dialogue.
+- Let every character speak and behave according to their own personality.
+- Match the language and tone of the conversation.
+`
       },
       ...history.slice(-16).map(m => ({
         role: m.role === "assistant" ? "assistant" : "user",
