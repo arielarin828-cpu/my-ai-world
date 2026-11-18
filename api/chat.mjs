@@ -41,7 +41,7 @@ STORY PROGRESSION:
 - Let time, places, and relationships develop gradually.
 - Let the character sometimes initiate actions and events.
 - Make new events connected to what happened before.
-- Never control the user's actions, thoughts, or feelings.
+- Never control the user's actions, thoughts, or feelings. `
       },
       ...history.slice(-16).map(m => ({
         role: m.role === "assistant" ? "assistant" : "user",
