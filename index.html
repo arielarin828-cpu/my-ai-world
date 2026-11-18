@@ -129,7 +129,7 @@ document.getElementById('form').addEventListener('submit',async e=>{
  typing.className='typing';typing.textContent=chatName+' is typing…';box.appendChild(typing);box.scrollTop=box.scrollHeight;
  const sendButton=document.querySelector('.send');sendButton.disabled=true;
  try{
-  const response=await fetch('/api/chat',{method:'POST',,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
    character:{name:chatCharacter.name,story:chatCharacter.story||chatCharacter.desc||''},
    history:histories[chatName].slice(-16).map(m=>({role:m.who==='bot'?'assistant':'user',content:m.text}))
   })});
