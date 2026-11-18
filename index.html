@@ -151,11 +151,6 @@ function drawMessages(){
  renderChatList();
 }
 renderChatList();
-let box=document.getElementById('messages');
-box.innerHTML='<div class="welcome">You are now chatting with '+escapeHtml(current.name)+'</div>'+histories[current.name].map(m=>`<div class="msg ${m.who}">${escapeHtml(m.text)}</div>`).join('');
-box.scrollTop=box.scrollHeight;
-localStorage.setItem('myai_histories',JSON.stringify(histories));
-}
 function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 document.getElementById('back').onclick=()=>document.getElementById('chat').classList.remove('active');
 document.getElementById('form').addEventListener('submit',async e=>{
