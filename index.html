@@ -160,7 +160,10 @@ document.getElementById('saveCharacter').addEventListener('click',()=>{
   if(!chosenImage){notice.textContent='Please upload a character picture first.';return;}
   if(!name){notice.textContent='Please enter a character name.';return;}
   if(!story){notice.textContent='Please write the character story.';return;}
-  let saved=[];try{saved=JSON.parse(localStorage.getItem('myai_characters')||'[]')}catch(e){}
+ if(story.split(/\s+/).length>1800){
+  notice.textContent='Character story cannot exceed 1800 words.';
+  return;
+  } let saved=[];try{saved=JSON.parse(localStorage.getItem('myai_characters')||'[]')}catch(e){}
   const character={name,story,privacy:chosenPrivacy,image:chosenImage};
   saved.unshift(character);
   try{localStorage.setItem('myai_characters',JSON.stringify(saved));}catch(e){notice.textContent='The image may be too large for browser storage. Try a smaller picture.';return;}
