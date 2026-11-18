@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>My AI World</title>
+<style>
+:root{--bg:#101010;--panel:#1b1b1b;--soft:#292929;--muted:#a7a7a7;--white:#f7f7f7;--accent:#d8d8d8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--white);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;min-height:100vh}
+.app{max-width:760px;margin:auto;min-height:100vh;background:#111;position:relative;padding-bottom:78px}
+.top{height:104px;display:flex;align-items:center;justify-content:center;font-size:27px;font-weight:700;letter-spacing:.2px}
+.logo-mark{display:inline-flex;align-items:center;gap:11px}.symbol{width:38px;height:38px;display:grid;place-items:center;border:2px solid #f5f5f5;border-radius:11px;font-size:25px;font-weight:850;line-height:1;letter-spacing:-2px;color:#fff}
+.search-wrap{padding:8px 18px 18px}.search{height:58px;border-radius:40px;background:#303030;display:flex;align-items:center;padding:0 20px;gap:14px;color:#bcbcbc}.search input{background:transparent;border:0;outline:0;color:white;font-size:18px;width:100%}.search input::placeholder{color:#aaa}
+.section{padding:0 2px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:3px}.character{height:245px;position:relative;overflow:hidden;background:#252525;cursor:pointer;border:0;padding:0;text-align:left;color:white}.character img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}.character:after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.83))}.character:hover img{transform:scale(1.035)}.name{position:absolute;z-index:1;left:12px;right:10px;bottom:12px;font-size:19px;line-height:1.18;font-weight:600;text-shadow:0 1px 5px #000}.bubble{position:absolute;z-index:2;right:12px;top:12px;font-size:19px;text-shadow:0 1px 4px #000}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,760px);height:75px;background:#171717;border-top:1px solid #292929;display:flex;justify-content:space-around;align-items:center;padding-bottom:env(safe-area-inset-bottom);z-index:5}.nav button{background:none;border:0;color:#aaa;font-size:25px;width:20%;height:100%;cursor:pointer}.nav button.active{color:#fff}.nav small{display:block;font-size:10px;margin-top:3px}
+.page{display:none}.page.active{display:block}
+.chat-page{display:none;position:fixed;inset:0;background:#101010;z-index:10;max-width:760px;margin:auto;flex-direction:column}.chat-page.active{display:flex}.chat-head{height:72px;display:flex;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid #292929;background:#151515}.back{border:0;background:none;color:white;font-size:29px;width:30px}.avatar-wrap{position:relative}.avatar{width:43px;height:43px;border-radius:50%;object-fit:cover;border:1px solid #555}.online{position:absolute;width:10px;height:10px;border-radius:50%;background:#7bd89b;right:0;bottom:1px;border:2px solid #151515}.chat-title{font-weight:650;font-size:16px}.chat-sub{font-size:12px;color:#9e9e9e;margin-top:3px}.chat-body{flex:1;overflow:auto;padding:18px 14px 20px;display:flex;flex-direction:column;gap:13px;background:radial-gradient(ellipse at top,#191919 0%,#101010 55%)}.welcome{align-self:center;text-align:center;color:#aaa;font-size:12px;margin:12px 0 18px}.msg{max-width:82%;padding:12px 15px;border-radius:18px;font-size:15px;line-height:1.45;white-space:pre-wrap;box-shadow:0 2px 8px #0003}.msg.bot{background:#292929;align-self:flex-start;border-bottom-left-radius:5px;color:#f4f4f4}.msg.user{background:#e8e8e8;color:#171717;align-self:flex-end;border-bottom-right-radius:5px}.msg-time{font-size:10px;color:#999;margin:4px 5px 0}.typing{align-self:flex-start;background:#292929;color:#aaa;padding:10px 15px;border-radius:18px;font-size:13px}.composer{display:flex;gap:9px;padding:11px 12px calc(12px + env(safe-area-inset-bottom));background:#171717;border-top:1px solid #292929}.composer input{flex:1;min-width:0;border:1px solid #393939;outline:0;border-radius:26px;background:#303030;color:white;padding:14px 17px;font-size:15px}.send{width:47px;height:47px;border:0;border-radius:50%;background:#eee;color:#111;font-size:20px}
+.empty{padding:35px 20px;text-align:center;color:#aaa}.simple-head{padding:20px;font-size:23px;font-weight:700}.profile{text-align:center;padding:55px 20px;color:#aaa}.profile .circle{font-size:42px;margin-bottom:12px}
+.create-wrap{padding:0 18px 30px}.create-intro{color:#aaa;font-size:13px;margin:-9px 0 22px}.step-label{font-size:12px;color:#aaa;letter-spacing:.7px;text-transform:uppercase;margin:20px 0 10px}.field{width:100%;background:#242424;border:1px solid #393939;border-radius:14px;color:#fff;padding:14px;font:inherit;outline:none}.field:focus{border-color:#aaa}.upload{border:1.5px dashed #666;border-radius:17px;min-height:190px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;color:#bbb;cursor:pointer;overflow:hidden;background:#1b1b1b}.upload strong{color:#fff}.upload img{width:100%;height:230px;object-fit:cover;display:none}.privacy-options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.privacy-option{background:#222;border:1px solid #444;border-radius:14px;padding:15px 12px;cursor:pointer;color:#eee;text-align:left}.privacy-option.selected{border-color:#fff;background:#303030}.privacy-option b{display:block;margin-bottom:5px}.privacy-option span{font-size:12px;color:#aaa;line-height:1.4}.primary{width:100%;border:0;border-radius:28px;padding:15px;background:#eee;color:#111;font-size:15px;font-weight:700;margin-top:18px;cursor:pointer}.secondary{width:100%;border:1px solid #555;border-radius:28px;padding:14px;background:transparent;color:#eee;font-size:14px;margin-top:10px}.story-help{font-size:12px;color:#999;margin:8px 2px}
+.profile-page{padding:0 18px 28px}.profile-banner{height:105px;border-radius:18px;background:linear-gradient(135deg,#292929,#171717);margin:4px 0 0;position:relative}.profile-main{display:flex;align-items:flex-end;gap:14px;margin:-38px 14px 18px;position:relative}.profile-avatar{width:82px;height:82px;border-radius:50%;object-fit:cover;border:4px solid #111;background:#333}.profile-identity{padding-bottom:7px;min-width:0}.profile-identity b{font-size:19px}.profile-identity small{display:block;color:#aaa;font-size:12px;margin-top:4px;overflow-wrap:anywhere}.edit-photo{display:inline-block;color:#ddd;font-size:12px;text-decoration:underline;cursor:pointer;margin-top:5px}.profile-card{background:#202020;border:1px solid #303030;border-radius:16px;padding:15px;margin:13px 0}.profile-card h3{font-size:14px;margin:0 0 12px}.profile-label{font-size:12px;color:#aaa;margin:11px 0 6px}.profile-input{width:100%;border:1px solid #393939;background:#292929;color:#fff;border-radius:11px;padding:12px;font:inherit;outline:none}.profile-bio{min-height:75px;resize:vertical}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.setting-copy b{display:block;font-size:14px}.setting-copy span{display:block;color:#aaa;font-size:12px;line-height:1.4;margin-top:4px}.switch{appearance:none;width:48px;height:28px;border-radius:20px;background:#555;position:relative;flex:none;cursor:pointer;transition:.2s}.switch:before{content:"";position:absolute;width:22px;height:22px;top:3px;left:3px;border-radius:50%;background:white;transition:.2s}.switch:checked{background:#ddd}.switch:checked:before{left:23px;background:#111}.nsfw-note{font-size:11px;color:#999;line-height:1.5;margin-top:10px}.age-modal{position:fixed;inset:0;background:#000b;z-index:30;display:none;align-items:center;justify-content:center;padding:22px}.age-modal.show{display:flex}.age-box{width:100%;max-width:420px;background:#222;border:1px solid #444;border-radius:20px;padding:22px}.age-box h3{margin:0 0 10px}.age-box p{color:#bbb;font-size:13px;line-height:1.5}.age-actions{display:flex;gap:9px;margin-top:18px}.age-actions button{flex:1;border:0;border-radius:22px;padding:12px;font-weight:650}.age-yes{background:#eee;color:#111}.age-no{background:#444;color:#fff}
+.created-card{display:flex;gap:12px;align-items:center;padding:12px;background:#222;border-radius:14px;margin:10px 18px}.created-card img{width:58px;height:68px;object-fit:cover;border-radius:9px}.created-card small{display:block;color:#aaa;margin-top:5px}
+@media(min-width:600px){.character{height:300px}.name{font-size:21px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><div class="logo-mark"><span class="symbol" aria-label="M logo">M</span><span>MY AI WORLD</span></div></header>
+  <main>
+    <section id="home" class="page active">
+      <div class="search-wrap"><label class="search"><span style="font-size:23px">⌕</span><input id="search" placeholder="Search anything..." autocomplete="off"></label></div>
+      <div class="section"><div class="grid" id="grid"></div></div>
+    </section>
+    <section id="searchPage" class="page"><div class="simple-head">Search</div><div class="search-wrap"><label class="search"><span>⌕</span><input id="search2" placeholder="Find a character..."></label></div><div class="grid" id="grid2"></div></section>
+    <section id="create" class="page">
+      <div class="simple-head">Create a character</div>
+      <div class="create-wrap">
+        <div class="create-intro">Bring your character to life in three simple steps.</div>
+        <div class="step-label">01 · Character image</div>
+        <label class="upload" for="charImage"><span id="uploadHint"><strong>＋ Upload a picture</strong><br>Choose an image from your phone</span><img id="preview" alt="Character preview"></label>
+        <input id="charImage" type="file" accept="image/*" hidden>
+        <div class="step-label">02 · Privacy</div>
+        <div class="privacy-options">
+          <button type="button" class="privacy-option selected" data-privacy="private"><b>🔒 Private</b><span>Only you can see and chat with this character.</span></button>
+          <button type="button" class="privacy-option" data-privacy="public"><b>🌍 Public</b><span>Share your character with everyone.</span></button>
+        </div>
+        <div class="step-label">03 · Character story</div>
+        <input id="charName" class="field" maxlength="40" placeholder="Character name">
+        <textarea id="charStory" class="field" rows="6" maxlength="2000" style="margin-top:10px;resize:vertical" placeholder="Write the character's story, personality, and how they should talk..."></textarea>
+        <div class="story-help">Tip: Describe their personality, background, and the way they speak.</div>
+        <button id="saveCharacter" class="primary" type="button">Create character</button>
+        <div id="createNotice" class="story-help" style="text-align:center;margin-top:12px"></div>
+      </div>
+    </section>
+    <section id="chats" class="page"><div class="simple-head">Chats</div><div id="chatList" class="empty">Your conversations will appear here.</div></section>
+    <section id="profile" class="page">
+      <div class="simple-head">My account</div>
+      <div class="profile-page">
+        <div class="profile-banner"></div>
+        <div class="profile-main">
+          <img id="profileAvatar" class="profile-avatar" alt="Profile photo" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240">
+          <div class="profile-identity"><b id="profileDisplayName">Your name</b><small id="profileDisplayEmail">Add your email</small><label class="edit-photo" for="profilePhoto">Change profile picture</label></div>
+        </div>
+        <input id="profilePhoto" type="file" accept="image/*" hidden>
+        <div class="profile-card">
+          <h3>Personal information</h3>
+          <div class="profile-label">Name</div><input id="profileName" class="profile-input" placeholder="Your name" maxlength="40">
+          <div class="profile-label">Email</div><input id="profileEmail" class="profile-input" type="email" placeholder="you@example.com">
+          <div class="profile-label">About me</div><textarea id="profileBio" class="profile-input profile-bio" maxlength="300" placeholder="Tell us a little about yourself..."></textarea>
+          <button id="saveProfile" class="primary" type="button">Save profile</button>
+          <div id="profileNotice" class="story-help"></div>
+        </div>
+        <div class="profile-card">
+          <h3>Content preferences</h3>
+          <div class="setting-row">
+            <div class="setting-copy"><b>NSFW / Mature content (18+)</b><span>Choose whether to show mature-rated characters and themes.</span></div>
+            <input id="nsfwToggle" class="switch" type="checkbox" aria-label="Enable mature content">
+          </div>
+          <div class="nsfw-note">Adults only (18+). This setting is a content preference, not an unrestricted mode. Platform safety rules, consent, and applicable laws still apply. It does not unlock prohibited content.</div>
+          <div id="nsfwStatus" class="story-help">Mature content is off.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <nav class="nav">
+    <button class="active" data-page="home">⌂<small>Home</small></button>
+    <button data-page="searchPage">⌕<small>Search</small></button>
+    <button data-page="create">⊕<small>Create</small></button>
+    <button data-page="chats">▣<small>Chats</small></button>
+    <button data-page="profile">◉<small>Profile</small></button>
+  </nav>
+</div>
+<div id="ageModal" class="age-modal" role="dialog" aria-modal="true" aria-labelledby="ageTitle">
+  <div class="age-box"><h3 id="ageTitle">Adults only (18+)</h3><p>Are you at least 18 years old? Enabling this preference may show mature-rated characters and themes. It does not remove platform safety rules.</p><div class="age-actions"><button id="ageCancel" class="age-no" type="button">Cancel</button><button id="ageConfirm" class="age-yes" type="button">I am 18+</button></div></div>
+</div>
+<section id="chat" class="chat-page">
+  <div class="chat-head"><button class="back" id="back">‹</button><div class="avatar-wrap"><img class="avatar" id="chatAvatar"><span class="online"></span></div><div><div class="chat-title" id="chatName"></div><div class="chat-sub">My AI World character</div></div></div>
+  <div class="chat-body" id="messages"></div>
+  <form class="composer" id="form"><input id="message" placeholder="Message..." autocomplete="off"><button class="send" aria-label="Send">➤</button></form>
+</section>
+<script>
+const chars=[
+ {name:"Orpheus",desc:"A gentle musician from an ancient world.",img:"https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=700",hello:"*He looks up from his lyre with a soft smile.* Hello, traveler. What brings you here?"},
+ {name:"Empress Soluna",desc:"Goddess of the moon and stars.",img:"https://images.unsplash.com/photo-1518709594023-6eab9bab7b23?w=700",hello:"*A silver glow surrounds her as she turns toward you.* Welcome, little star. I've been waiting."},
+ {name:"Grumpy Snowboarder",desc:"A cold attitude, but maybe a warm heart.",img:"https://images.unsplash.com/photo-1517299321609-52687d1bc55a?w=700",hello:"*He pulls off his goggles and raises an eyebrow.* What do you want? Make it quick."},
+ {name:"Intergalactic Spaceport",desc:"A mysterious station at the edge of the galaxy.",img:"https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=700",hello:"*The station hums as the docking lights turn green.* Arrival registered. State your destination."},
+ {name:"Conductor Arjun",desc:"A friendly train conductor with stories to tell.",img:"https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=700",hello:"*He tips his cap warmly.* All aboard! Where are you headed today?"},
+ {name:"Starship Voyages",desc:"Adventure awaits among the stars.",img:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=700",hello:"*The ship's console lights up.* Captain, we're ready for your next adventure."}
+];
+let current=null, histories={};
+const grid=document.getElementById('grid'),grid2=document.getElementById('grid2');
+function customCharacters(){try{return JSON.parse(localStorage.getItem('myai_characters')||'[]').map(c=>({...c,desc:c.story,hello:`*${c.name} turns toward you.* Hello. What would you like to talk about?`}));}catch(e){return []}}
+function allCharacters(){return [...chars,...customCharacters()]}
+function card(c){return `<button class="character" data-name="${c.name.replace(/"/g,'&quot;')}"><img src="${c.img}" alt=""><span class="bubble">▢</span><span class="name">${c.name}</span></button>`}
+function render(target,list){target.innerHTML=list.map(card).join('');target.querySelectorAll('.character').forEach(b=>b.addEventListener('click',()=>openChat(allCharacters().find(c=>c.name===b.dataset.name))))}
+render(grid,allCharacters());render(grid2,allCharacters());
+function filter(q){let list=allCharacters().filter(c=>c.name.toLowerCase().includes(q.toLowerCase()));render(grid,list);render(grid2,list)}
+document.getElementById('search').addEventListener('input',e=>filter(e.target.value));
+document.getElementById('search2').addEventListener('input',e=>filter(e.target.value));
+function openChat(c){current=c;document.getElementById('chatName').textContent=c.name;document.getElementById('chatAvatar').src=c.img;document.getElementById('chat').classList.add('active');if(!histories[c.name])histories[c.name]=[{who:'bot',text:c.hello}];drawMessages();document.getElementById('message').focus()}
+function drawMessages(){let box=document.getElementById('messages');box.innerHTML='<div class="welcome">You are now chatting with '+escapeHtml(current.name)+'</div>'+histories[current.name].map(m=>`<div class="msg ${m.who}">${escapeHtml(m.text)}</div>`).join('');box.scrollTop=box.scrollHeight}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+document.getElementById('back').onclick=()=>document.getElementById('chat').classList.remove('active');
+document.getElementById('form').addEventListener('submit',async e=>{
+ e.preventDefault();
+ let input=document.getElementById('message'),v=input.value.trim();if(!v||!current)return;
+ const chatCharacter={...current}; const chatName=chatCharacter.name;
+ histories[chatName].push({who:'user',text:v});input.value='';drawMessages();
+ let box=document.getElementById('messages');let typing=document.createElement('div');
+ typing.className='typing';typing.textContent=chatName+' is typing…';box.appendChild(typing);box.scrollTop=box.scrollHeight;
+ const sendButton=document.querySelector('.send');sendButton.disabled=true;
+ try{
+  const response=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+   character:{name:chatCharacter.name,story:chatCharacter.story||chatCharacter.desc||''},
+   history:histories[chatName].slice(-16).map(m=>({role:m.who==='bot'?'assistant':'user',content:m.text}))
+  })});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||'The AI could not respond.');
+  histories[chatName].push({who:'bot',text:data.reply||'Sorry, I could not generate a reply.'});
+ }catch(err){histories[chatName].push({who:'bot',text:'Connection error: '+(err.message||'Please try again in a moment.')});}
+ finally{typing.remove();sendButton.disabled=false;drawMessages();}
+});
+
+let chosenPrivacy='private', chosenImage='';
+document.querySelectorAll('.privacy-option').forEach(btn=>btn.addEventListener('click',()=>{
+  chosenPrivacy=btn.dataset.privacy;
+  document.querySelectorAll('.privacy-option').forEach(x=>x.classList.toggle('selected',x===btn));
+}));
+document.getElementById('charImage').addEventListener('change',e=>{
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader(); reader.onload=()=>{
+    chosenImage=reader.result;
+    const img=document.getElementById('preview');img.src=chosenImage;img.style.display='block';
+    document.getElementById('uploadHint').style.display='none';
+  }; reader.readAsDataURL(file);
+});
+document.getElementById('saveCharacter').addEventListener('click',()=>{
+  const name=document.getElementById('charName').value.trim();
+  const story=document.getElementById('charStory').value.trim();
+  const notice=document.getElementById('createNotice');
+  if(!chosenImage){notice.textContent='Please upload a character picture first.';return;}
+  if(!name){notice.textContent='Please enter a character name.';return;}
+  if(!story){notice.textContent='Please write the character story.';return;}
+  let saved=[];try{saved=JSON.parse(localStorage.getItem('myai_characters')||'[]')}catch(e){}
+  const character={name,story,privacy:chosenPrivacy,image:chosenImage};
+  saved.unshift(character);
+  try{localStorage.setItem('myai_characters',JSON.stringify(saved));}catch(e){notice.textContent='The image may be too large for browser storage. Try a smaller picture.';return;}
+  notice.textContent=chosenPrivacy==='private'?'Your private character has been created on this device.':'Your character has been added to this demo on this device.';render(grid,allCharacters());render(grid2,allCharacters());
+  document.getElementById('charName').value='';document.getElementById('charStory').value='';
+  document.getElementById('preview').style.display='none';document.getElementById('uploadHint').style.display='block';
+  document.getElementById('charImage').value='';chosenImage='';
+});
+
+// Demo account profile and age-gated content preference; stored only on this device.
+let profileData={name:'',email:'',bio:'',photo:'',nsfw:false};
+try{profileData={...profileData,...JSON.parse(localStorage.getItem('myai_profile')||'{}')}}catch(e){}
+function refreshProfile(){
+ document.getElementById('profileName').value=profileData.name||'';
+ document.getElementById('profileEmail').value=profileData.email||'';
+ document.getElementById('profileBio').value=profileData.bio||'';
+ document.getElementById('profileDisplayName').textContent=profileData.name||'Your name';
+ document.getElementById('profileDisplayEmail').textContent=profileData.email||'Add your email';
+ if(profileData.photo)document.getElementById('profileAvatar').src=profileData.photo;
+ document.getElementById('nsfwToggle').checked=!!profileData.nsfw;
+ document.getElementById('nsfwStatus').textContent=profileData.nsfw?'Mature content preference is on (18+).':'Mature content is off.';
+}
+refreshProfile();
+document.getElementById('profilePhoto').addEventListener('change',e=>{
+ const f=e.target.files[0];if(!f)return;
+ const r=new FileReader();r.onload=()=>{profileData.photo=r.result;document.getElementById('profileAvatar').src=r.result;};r.readAsDataURL(f);
+});
+document.getElementById('saveProfile').addEventListener('click',()=>{
+ profileData.name=document.getElementById('profileName').value.trim();
+ profileData.email=document.getElementById('profileEmail').value.trim();
+ profileData.bio=document.getElementById('profileBio').value.trim();
+ try{localStorage.setItem('myai_profile',JSON.stringify(profileData));document.getElementById('profileNotice').textContent='Profile saved on this device.';refreshProfile();}
+ catch(e){document.getElementById('profileNotice').textContent='Could not save. Try a smaller profile picture.';}
+});
+const nsfwToggle=document.getElementById('nsfwToggle'),ageModal=document.getElementById('ageModal');
+nsfwToggle.addEventListener('change',()=>{
+ if(nsfwToggle.checked){nsfwToggle.checked=false;ageModal.classList.add('show');}
+ else{profileData.nsfw=false;try{localStorage.setItem('myai_profile',JSON.stringify(profileData))}catch(e){};refreshProfile();}
+});
+document.getElementById('ageCancel').onclick=()=>ageModal.classList.remove('show');
+document.getElementById('ageConfirm').onclick=()=>{
+ profileData.nsfw=true;try{localStorage.setItem('myai_profile',JSON.stringify(profileData))}catch(e){}
+ ageModal.classList.remove('show');refreshProfile();
+};
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(b.dataset.page).classList.add('active')}));
+</script>
+</body></html>
