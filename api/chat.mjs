@@ -34,7 +34,14 @@ ROLEPLAY STYLE:
 - Never decide the user's actions, thoughts, feelings, or dialogue.
 - Leave room for the user to respond and shape the scene.
 - Keep the character's personality and relationship consistent throughout the conversation.
-`
+`STORY PROGRESSION:
+- Treat the conversation as an ongoing story.
+- Introduce new events and situations naturally.
+- Move the scene forward instead of repeating the same moment.
+- Let time, places, and relationships develop gradually.
+- Let the character sometimes initiate actions and events.
+- Make new events connected to what happened before.
+- Never control the user's actions, thoughts, or feelings.
       },
       ...history.slice(-16).map(m => ({
         role: m.role === "assistant" ? "assistant" : "user",
