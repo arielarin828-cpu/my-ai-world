@@ -120,7 +120,37 @@ function filter(q){let list=allCharacters().filter(c=>c.name.toLowerCase().inclu
 document.getElementById('search').addEventListener('input',e=>filter(e.target.value));
 document.getElementById('search2').addEventListener('input',e=>filter(e.target.value));
 function openChat(c){current=c;document.getElementById('chatName').textContent=c.name;document.getElementById('chatAvatar').src=c.img;document.getElementById('chat').classList.add('active');if(!histories[c.name])histories[c.name]=[{who:'bot',text:c.hello}];drawMessages();document.getElementById('message').focus()}
- function drawMessages(){
+function renderChatList(){
+ const list=document.getElementById('chatList');
+ const names=Object.keys(histories).filter(n=>histories[n]&&histories[n].length);
+ if(!names.length){
+  list.innerHTML='Your conversations will appear here.';
+  return;
+ }
+ list.className='';
+ list.innerHTML=names.reverse().map(name=>{
+  const c=allCharacters().find(x=>x.name===name)||{};
+  const img=c.img||c.image||'';
+  const last=histories[name][histories[name].length-1];
+  return `<button onclick="openChat(allCharacters().find(c=>c.name===this.dataset.name))" data-name="${escapeHtml(name)}" style="width:100%;display:flex;align-items:center;gap:12px;padding:12px;background:#1b1b1b;border:1px solid #292929;border-radius:14px;color:white;text-align:left;margin-bottom:10px">
+  <img src="${escapeHtml(img)}" style="width:52px;height:52px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'">
+  <div style="flex:1;min-width:0">
+  <b>${escapeHtml(name)}</b>
+  <div style="color:#aaa;font-size:13px;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(last.text)}</div>
+  </div>
+  <span style="color:#888">›</span>
+  </button>`;
+ }).join('');
+}
+
+function drawMessages(){
+ let box=document.getElementById('messages');
+ box.innerHTML='<div class="welcome">You are now chatting with '+escapeHtml(current.name)+'</div>'+histories[current.name].map(m=>`<div class="msg ${m.who}">${escapeHtml(m.text)}</div>`).join('');
+ box.scrollTop=box.scrollHeight;
+ localStorage.setItem('myai_histories',JSON.stringify(histories));
+ renderChatList();
+}
+renderChatList();
 let box=document.getElementById('messages');
 box.innerHTML='<div class="welcome">You are now chatting with '+escapeHtml(current.name)+'</div>'+histories[current.name].map(m=>`<div class="msg ${m.who}">${escapeHtml(m.text)}</div>`).join('');
 box.scrollTop=box.scrollHeight;
