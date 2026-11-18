@@ -120,7 +120,12 @@ function filter(q){let list=allCharacters().filter(c=>c.name.toLowerCase().inclu
 document.getElementById('search').addEventListener('input',e=>filter(e.target.value));
 document.getElementById('search2').addEventListener('input',e=>filter(e.target.value));
 function openChat(c){current=c;document.getElementById('chatName').textContent=c.name;document.getElementById('chatAvatar').src=c.img;document.getElementById('chat').classList.add('active');if(!histories[c.name])histories[c.name]=[{who:'bot',text:c.hello}];drawMessages();document.getElementById('message').focus()}
-function drawMessages(){let box=document.getElementById('messages');box.innerHTML='<div class="welcome">You are now chatting with '+escapeHtml(current.name)+'</div>'+histories[current.name].map(m=>`<div class="msg ${m.who}">${escapeHtml(m.text)}</div>`).join('');box.scrollTop=box.scrollHeight}localStorage.setItem('myai_histories',JSON.stringify(histories));
+ function drawMessages(){
+let box=document.getElementById('messages');
+box.innerHTML='<div class="welcome">You are now chatting with '+escapeHtml(current.name)+'</div>'+histories[current.name].map(m=>`<div class="msg ${m.who}">${escapeHtml(m.text)}</div>`).join('');
+box.scrollTop=box.scrollHeight;
+localStorage.setItem('myai_histories',JSON.stringify(histories));
+}
 function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 document.getElementById('back').onclick=()=>document.getElementById('chat').classList.remove('active');
 document.getElementById('form').addEventListener('submit',async e=>{
