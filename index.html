@@ -20,6 +20,109 @@
 .profile-page{padding:0 18px 28px}.profile-banner{height:105px;border-radius:18px;background:linear-gradient(135deg,#292929,#171717);margin:4px 0 0;position:relative}.profile-main{display:flex;align-items:flex-end;gap:14px;margin:-38px 14px 18px;position:relative}.profile-avatar{width:82px;height:82px;border-radius:50%;object-fit:cover;border:4px solid #111;background:#333}.profile-identity{padding-bottom:7px;min-width:0}.profile-identity b{font-size:19px}.profile-identity small{display:block;color:#aaa;font-size:12px;margin-top:4px;overflow-wrap:anywhere}.edit-photo{display:inline-block;color:#ddd;font-size:12px;text-decoration:underline;cursor:pointer;margin-top:5px}.profile-card{background:#202020;border:1px solid #303030;border-radius:16px;padding:15px;margin:13px 0}.profile-card h3{font-size:14px;margin:0 0 12px}.profile-label{font-size:12px;color:#aaa;margin:11px 0 6px}.profile-input{width:100%;border:1px solid #393939;background:#292929;color:#fff;border-radius:11px;padding:12px;font:inherit;outline:none}.profile-bio{min-height:75px;resize:vertical}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.setting-copy b{display:block;font-size:14px}.setting-copy span{display:block;color:#aaa;font-size:12px;line-height:1.4;margin-top:4px}.switch{appearance:none;width:48px;height:28px;border-radius:20px;background:#555;position:relative;flex:none;cursor:pointer;transition:.2s}.switch:before{content:"";position:absolute;width:22px;height:22px;top:3px;left:3px;border-radius:50%;background:white;transition:.2s}.switch:checked{background:#ddd}.switch:checked:before{left:23px;background:#111}.nsfw-note{font-size:11px;color:#999;line-height:1.5;margin-top:10px}.age-modal{position:fixed;inset:0;background:#000b;z-index:30;display:none;align-items:center;justify-content:center;padding:22px}.age-modal.show{display:flex}.age-box{width:100%;max-width:420px;background:#222;border:1px solid #444;border-radius:20px;padding:22px}.age-box h3{margin:0 0 10px}.age-box p{color:#bbb;font-size:13px;line-height:1.5}.age-actions{display:flex;gap:9px;margin-top:18px}.age-actions button{flex:1;border:0;border-radius:22px;padding:12px;font-weight:650}.age-yes{background:#eee;color:#111}.age-no{background:#444;color:#fff}
 .created-card{display:flex;gap:12px;align-items:center;padding:12px;background:#222;border-radius:14px;margin:10px 18px}.created-card img{width:58px;height:68px;object-fit:cover;border-radius:9px}.created-card small{display:block;color:#aaa;margin-top:5px}
 @media(min-width:600px){.character{height:300px}.name{font-size:21px}}
+  
+/* My AI World — CHAI-inspired chat design */
+.chat-page {
+  background: #000 !important;
+  max-width: 760px;
+  width: 100%;
+}
+
+.chat-head {
+  height: 76px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: #000;
+  border: 0;
+}
+
+.chat-head .back {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #292929;
+  font-size: 32px;
+}
+
+.chat-body {
+  background: #000;
+  padding: 24px 20px;
+  gap: 34px;
+}
+
+.msg {
+  max-width: 100%;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent !important;
+  color: #fff !important;
+  font-size: 18px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.msg.bot {
+  align-self: flex-start;
+}
+
+.msg.user {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.typing {
+  background: transparent;
+  color: #aaa;
+  padding: 8px 0;
+  border-radius: 0;
+}
+
+.composer {
+  background: #000;
+  border: 0;
+  padding: 12px 14px calc(14px + env(safe-area-inset-bottom));
+  gap: 10px;
+}
+
+.composer input {
+  height: 62px;
+  border: 0;
+  border-radius: 40px;
+  background: #292929;
+  font-size: 17px;
+  padding: 0 22px;
+}
+
+.send {
+  width: 58px;
+  height: 58px;
+  flex: none;
+  border-radius: 50%;
+  background: #292929;
+  color: white;
+  font-size: 23px;
+}
+
+.send:disabled {
+  opacity: .5;
+}
+
+@media (max-width: 480px) {
+  .chat-body {
+    padding: 20px 16px;
+    gap: 30px;
+  }
+
+  .msg {
+    font-size: 18px;
+    line-height: 1.5;
+  }
+}
+
 </style>
 </head>
 <body>
