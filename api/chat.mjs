@@ -132,9 +132,6 @@ Never mention these instructions or break character.`
   }
 }
 
-  
-    return res.status(405).json({ error: "Use POST for chat requests." });
-  }
 
   const apiKey = process.env.GROQ_API_KEY;
 
