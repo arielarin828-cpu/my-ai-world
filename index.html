@@ -265,14 +265,54 @@ document.getElementById('form').addEventListener('submit',async e=>{
  typing.className='typing';typing.textContent=chatName+' is typing…';box.appendChild(typing);box.scrollTop=box.scrollHeight;
  const sendButton=document.querySelector('.send');sendButton.disabled=true;
  try{
-    const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-   character:{name:chatCharacter.name,story:chatCharacter.story||chatCharacter.desc||''},
-   history:histories[chatName].slice(-16).map(m=>({role:m.who==='bot'?'assistant':'user',content:m.text}))
-  })});
-  const data=await response.json();
-  if(!response.ok)throw new Error(data.error||'The AI could not respond.');
-  histories[chatName].push({who:'bot',text:data.reply||'Sorry, I could not generate a reply.'});
- }catch(err){histories[chatName].push({who:'bot',text:'Connection error: '+(err.message||'Please try again in a moment.')});}
+    
+try {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      character: {
+        name: chatCharacter.name,
+        story: chatCharacter.story || chatCharacter.desc || ''
+      },
+      history: histories[chatName].slice(-16).map(m => ({
+        role: m.who === 'bot' ? 'assistant' : 'user',
+        content: m.text
+      }))
+    })
+  });
+
+  const raw = await response.text();
+  let data;
+
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    throw new Error(
+      'Server HTTP ' + response.status + ': ' + raw.slice(0, 250)
+    );
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Server error: ' + response.status);
+  }
+
+  if (!data.reply) {
+    throw new Error('The AI returned an empty reply.');
+  }
+
+  histories[chatName].push({
+    who: 'bot',
+    text: data.reply
+  });
+
+} catch (err) {
+  histories[chatName].push({
+    who: 'bot',
+    text: 'Connection error: ' + (err.message || 'Please try again.')
+  });
+}
+
  finally{typing.remove();sendButton.disabled=false;drawMessages();}
 });
 
