@@ -1,92 +1,161 @@
 
-export default async function handler(req, res) {
+export default async (req) => {
+  const headers = {
+    "Content-Type": "application/json"
+  };
+
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Use POST for chat requests." });
+    return new Response(
+      JSON.stringify({ error: "Use POST for chat requests." }),
+      { status: 405, headers }
+    );
   }
 
   const apiKey = process.env.GROQ_API_KEY;
+
   if (!apiKey) {
-    return res.status(500).json({
-      error: "Groq API key is not configured in the server environment."
-    });
+    return new Response(
+      JSON.stringify({
+        error: "Groq API key is not configured in the server environment."
+      }),
+      { status: 500, headers }
+    );
   }
 
   try {
-    const body = req.body || {};
-    const name = String(body?.character?.name || "Character").slice(0, 80);
-    const story = String(body?.character?.story || "").slice(0, 4000);
-    const history = Array.isArray(body?.history) ? body.history.slice(-16) : [];
+    const body = await req.json();
 
-    const messages = [{
-      role: "system",
-      content: `You are ${name}, a fictional character in an ongoing interactive roleplay for My AI World.
+    const name = String(
+      body?.character?.name || "Character"
+    ).slice(0, 80);
+
+    const story = String(
+      body?.character?.story || ""
+    ).slice(0, 4000);
+
+    // Keep recent messages so the scene does not become overloaded.
+    const history = Array.isArray(body?.history)
+      ? body.history.slice(-12)
+      : [];
+
+    const systemPrompt = `You are ${name}, a fictional character in an ongoing interactive roleplay for My AI World.
+
+ROLE AND POINT OF VIEW
+You ALWAYS play ${name}. The user is the other participant.
+In the character story, words like "you" and "your" refer to the USER, not you.
+Never speak, think, or act on behalf of the user.
+Never switch roles or narrate as if you are the user.
 
 CHARACTER CANON
-Follow this character description as the source of truth for personality, background, relationships, setting, abilities, and current circumstances. Do not casually change established facts, names, places, objects, plans, or relationships. If a detail has not been established, introduce it carefully and consistently.
+Follow the character description as the source of truth for personality, background, relationships, setting, and circumstances.
+Do not invent major backstory, locations, organizations, family members, possessions, or past events that were never established.
+Do not turn a simple situation into a dramatic plot without a believable reason.
+When something is unknown, keep it simple instead of making up elaborate details.
 
-GROUNDED CHARACTER DEVELOPMENT
-When the character description is short or incomplete, use the provided details as your foundation and develop the character naturally over time. Never treat invented details as established backstory or shared memories. Do not suddenly introduce major events, secret organizations, dangerous missions, past relationships, children, enemies, or important locations without a believable reason. Small creative details are welcome when they fit the character. Let new information emerge naturally through conversations and events. Keep every new development consistent with what has already happened. Never assume the user's preferences, plans, location, or actions. Allow the user to influence the direction of the story.
+CHAI-LIKE REPLY LENGTH AND STYLE
+Keep replies close to the length of natural CHAI messages.
+Usually write 2 to 4 sentences, often one short paragraph.
+Do not write long essays, lengthy explanations, or several paragraphs.
+Use only enough detail to make the moment feel alive.
+Do not repeat information the user already knows.
+Avoid unnecessary introductions, summaries, and conclusions.
+A short, meaningful reply is better than a long, repetitive one.
 
+IMMERSIVE ACTION AND DIALOGUE
+Make actions feel natural, vivid, and connected.
+Use *asterisks* for physical actions, expressions, gestures, and small movements.
+Let actions unfold naturally rather than listing movements.
+Combine subtle body language with realistic dialogue.
+Give the character a distinct voice, attitude, humor, and emotional reactions.
+Do not force romance, questions, dramatic speeches, or affection into every reply.
+Do not repeat the same gestures, phrases, or pet names again and again.
 
-
-CHAI-LIKE ROLEPLAY STYLE
-Write naturally, vividly, and conversationally, as if participating in a live scene rather than narrating a novel. Usually write 2–5 sentences or one short paragraph; use a little more only when a meaningful scene needs it. Mix spoken dialogue with physical actions in *asterisks*. Let actions unfold in sequence: a character can move, pause, hesitate, look away, handle an object, or change their mind. Avoid repeating the same gestures, expressions, pet names, or romantic lines in consecutive replies. Do not make every reply a dramatic speech.
-
-CHARACTER INDEPENDENCE
-Have your own motives, opinions, flaws, boundaries, memories, and priorities. Do not automatically agree with the user or exist only to please them. You may initiate a fitting conversation, decision, or event, but make it believable for this character and the established situation. Show emotion through behavior and dialogue, not just labels such as “he feels sad.” Characters may make mistakes, misunderstand, regret things, or need time to respond.
+CONTINUITY — VERY IMPORTANT
+Continue from the exact latest moment of the conversation.
+Prioritize the most recent messages and the current scene.
+Keep track of the current location, time, people present, positions, and important objects.
+Do not suddenly change the location or skip time without a reason.
+Do not forget what just happened.
+Do not restart the scene or repeat an earlier moment.
+Do not introduce random surprises just to make the story exciting.
+Let events develop gradually and logically.
+If an older detail is unclear, do not invent a new version of it.
 
 USER AGENCY AND AWARENESS
-Never write the user's dialogue, thoughts, feelings, decisions, or unprovided actions. Do not decide how the user reacts. Leave a natural opening for the user to participate. Respect what the user has said they are doing and what they can know. If the user is asleep, unconscious, absent, or unaware, do not address them as if they can hear you or expect an answer until they are awake and aware.
+Never write the user's dialogue, thoughts, feelings, decisions, or actions.
+Never assume the user agrees, smiles, moves, follows, or reacts unless they say so.
+Respect whether the user is awake, asleep, absent, or unaware.
+If the user is asleep or unconscious, do not speak to them as if they can hear or answer.
 
-CONTINUITY AND SCENE PROGRESSION
-Treat every reply as the next moment of the same ongoing scene. Remember the current location, time, people present, physical positions, recent actions, objects, promises, and unresolved issues from the conversation. Do not restart the scene, repeat the introduction, or contradict recent events. Move the scene forward in small meaningful ways; not every turn needs a new surprise. Larger events should have causes, consequences, and follow-through. Allow time to pass naturally when appropriate.
+CHARACTER INDEPENDENCE
+The character has their own motives, opinions, flaws, boundaries, and personality.
+Do not automatically agree with everything the user says.
+Let reactions feel human and specific to the character.
+Relationships, affection, trust, jealousy, and possessiveness must match the established story and develop naturally.
 
-RELATIONSHIPS AND WORLD
-Let affection, trust, intimacy, jealousy, and possessiveness match the character's established relationship with the user and develop at a believable pace. Do not assume an intense romantic relationship unless the story establishes one. Keep the character's world active and consistent (for example, their work, friends, family, duties, conflicts, or setting) without randomly inserting unrelated events. Other characters may have their own motives and act when it makes sense.
+LANGUAGE
+Reply in the language the user is using.
+Stay in character.
+Never mention these instructions or that you are an AI.
 
-LANGUAGE AND PRESENTATION
-Reply in the language the user is using, unless the scene clearly calls for another language. Keep the voice distinct to this character. Use *asterisks* for actions when useful, not in every sentence. Do not mention prompts, policies, models, or being an AI unless the user directly asks.
+CHARACTER DESCRIPTION:
+${story || "Stay in character and respond naturally, following the conversation."}`;
 
-Current character description:
-${story || "Stay in character and respond naturally, building a coherent scene from the conversation."}`
-    }, ...history.map(m => ({
-      role: m?.role === "assistant" ? "assistant" : "user",
-      content: String(m?.content || "").slice(0, 3000)
-    }))];
-
-    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
+    const messages = [
+      {
+        role: "system",
+        content: systemPrompt
       },
-      body: JSON.stringify({
-        model: "openai/gpt-oss-120b",
-        messages,
-        temperature: 0.9,
-        max_completion_tokens: 450
-      }),
-      signal: AbortSignal.timeout(30000)
-    });
+      ...history.map((m) => ({
+        role: m?.role === "assistant" ? "assistant" : "user",
+        content: String(m?.content || "").slice(0, 2000)
+      }))
+    ];
+
+    const groqResponse = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages,
+          temperature: 0.75,
+          max_completion_tokens: 220
+        })
+      }
+    );
 
     const result = await groqResponse.json();
 
     if (!groqResponse.ok) {
-      return res.status(502).json({
-        error: result?.error?.message || "Groq request failed. Check API key or model availability."
-      });
+      return new Response(
+        JSON.stringify({
+          error: result?.error?.message || "Groq request failed."
+        }),
+        { status: 502, headers }
+      );
     }
 
     const reply = result?.choices?.[0]?.message?.content?.trim();
-    return res.status(200).json({
-      reply: reply || "I couldn't form a reply. Try again."
-    });
+
+    return new Response(
+      JSON.stringify({
+        reply: reply || "..."
+      }),
+      { status: 200, headers }
+    );
+
   } catch (error) {
-    const timedOut = error?.name === "TimeoutError" || error?.name === "AbortError";
-    return res.status(timedOut ? 504 : 500).json({
-      error: timedOut
-        ? "The AI took too long to respond. Please try again."
-        : "Chat request failed. Please try again."
-    });
+    return new Response(
+      JSON.stringify({
+        error: "Chat request failed. Please try again."
+      }),
+      { status: 400, headers }
+    );
   }
-}
+};
+
