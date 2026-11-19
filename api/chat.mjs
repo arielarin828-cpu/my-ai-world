@@ -1,16 +1,22 @@
-export default async (req) => {
+
+export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Use POST for chat requests." }), {
-      status: 405, headers: { "Content-Type": "application/json", "Allow": "POST" }
+    return res.status(405).json({ error: "Use POST for chat requests." });
+  }
+
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({
+      error: "Groq API key is not configured in the server environment."
     });
   }
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) return new Response(JSON.stringify({ error: "Groq API key is not configured in the server environment." }), { status: 500, headers: { "Content-Type": "application/json" } });
+
   try {
-    const body = await req.json();
+    const body = req.body || {};
     const name = String(body?.character?.name || "Character").slice(0, 80);
     const story = String(body?.character?.story || "").slice(0, 4000);
     const history = Array.isArray(body?.history) ? body.history.slice(-16) : [];
+
     const messages = [{
       role: "system",
       content: `You are ${name}, a fictional character in an ongoing interactive roleplay for My AI World.
@@ -42,18 +48,40 @@ ${story || "Stay in character and respond naturally, building a coherent scene f
       role: m?.role === "assistant" ? "assistant" : "user",
       content: String(m?.content || "").slice(0, 3000)
     }))];
+
     const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
-      headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages, temperature: 0.9, max_completion_tokens: 450 })
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages,
+        temperature: 0.9,
+        max_completion_tokens: 450
+      }),
+      signal: AbortSignal.timeout(30000)
     });
+
     const result = await groqResponse.json();
+
     if (!groqResponse.ok) {
-      return new Response(JSON.stringify({ error: result?.error?.message || "Groq request failed. Check API key or model availability." }), { status: 502, headers: { "Content-Type": "application/json" } });
+      return res.status(502).json({
+        error: result?.error?.message || "Groq request failed. Check API key or model availability."
+      });
     }
+
     const reply = result?.choices?.[0]?.message?.content?.trim();
-    return new Response(JSON.stringify({ reply: reply || "I couldn't form a reply. Try again." }), { status: 200, headers: { "Content-Type": "application/json" } });
+    return res.status(200).json({
+      reply: reply || "I couldn't form a reply. Try again."
+    });
   } catch (error) {
-    return new Response(JSON.stringify({ error: "Chat request failed. Please try again." }), { status: 400, headers: { "Content-Type": "application/json" } });
+    const timedOut = error?.name === "TimeoutError" || error?.name === "AbortError";
+    return res.status(timedOut ? 504 : 500).json({
+      error: timedOut
+        ? "The AI took too long to respond. Please try again."
+        : "Chat request failed. Please try again."
+    });
   }
-};
+}
