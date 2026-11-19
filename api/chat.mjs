@@ -110,13 +110,12 @@ ${story || "Stay in character and respond naturally, following the conversation.
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "openai/gpt-oss-120b",
-max_completion_tokens: 220,
-reasoning_effort: "low"
-          messages,
-          temperature: 0.8,
-          max_tokens: 220
-        }),
+  model: "openai/gpt-oss-120b",
+  max_completion_tokens: 220,
+  reasoning_effort: "low",
+  messages,
+  temperature: 0.8
+}),
         signal: AbortSignal.timeout(30000)
       }
     );
