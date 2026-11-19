@@ -110,7 +110,9 @@ ${story || "Stay in character and respond naturally, following the conversation.
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
+          model: "openai/gpt-oss-120b",
+max_completion_tokens: 220,
+reasoning_effort: "low"
           messages,
           temperature: 0.8,
           max_tokens: 220
